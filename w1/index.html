@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>個人數位名片</title>
+  
+  <style>
+    /* 全局基礎設定 */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+      background-color: #B2EBF2; /* 馬卡龍極淺杏色背景 */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    /* 名片主體卡片 */
+    .card {
+      background-color: #FFFFFF;
+      width: 320px;
+      padding: 35px 25px;
+      border-radius: 24px; /* 圓潤現代感大圓角 */
+      text-align: center;
+      box-shadow: 0 10px 25px rgba(224, 187, 201, 0.35); /* 馬卡龍粉嫩微陰影 */
+    }
+
+    /* 圓形大頭貼 */
+    .avatar {
+      width: 110px;
+      height: 110px;
+      border-radius: 50%; /* 設置為正圓形 */
+      object-fit: cover;
+      border: 4px solid #B2EBF2; /* 大頭貼外圈粉白邊框 */
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+      margin-bottom: 18px;
+    }
+
+    /* 姓名 */
+    .name {
+      font-size: 1.4rem;
+      color: #1A2A42; /* 深奶茶色文字，避免純黑過於僵硬 */
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    /* 自我介紹 */
+    .bio {
+      font-size: 0.9rem;
+      color: #888888; /* 中明度奶茶色/灰色，確保文字清晰 */
+      margin-bottom: 25px;
+      line-height: 1.4;
+    }
+
+    /* 按鈕區塊 */
+    .button-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px; /* 按鈕之間的間距 */
+    }
+
+    /* 按鈕通用樣式 */
+    .btn {
+      display: block;
+      padding: 12px 0;
+      border-radius: 50px; /* 膠囊狀圓角按鈕 */
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: #FFFFFF;
+      transition: all 0.3s ease; /* 鼠標滑過時的平滑過渡效果 */
+    }
+
+    /* Instagram 按鈕 */
+    .btn-instagram {
+      background-color: #DDA0DD;
+      box-shadow: 0 4px 12px rgba(221, 160, 221, 0.4);
+    }
+
+    .btn-instagram:hover {
+      background-color: #DA70D6;
+      transform: translateY(-2px); /* 微微向上浮起 */
+    }
+
+    /* Email 按鈕 */
+    .btn-email {
+      background-color: #87CEEB;
+      box-shadow: 0 4px 12px rgba(135, 206, 235, 0.4);
+    }
+
+    .btn-email:hover {
+      background-color: #00BFFF;
+      transform: translateY(-2px);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <!-- 大頭貼 -->
+    <img class="avatar" src="https://images.unsplash.com/photo-1517849845537-4d257902454a?auto=format&fit=crop&w=300&q=80" alt="個人頭像">
+    
+    <!-- 姓名與介紹 -->
+    <h1 class="name">姓名 / Name</h1>
+    <p class="bio">✨ 設計新手 / 探索生活與美學的創作者</p>
+    
+    <!-- 按鈕區 -->
+    <div class="button-group">
+      <a href="https://instagram.com" target="_blank" class="btn btn-instagram">Instagram</a>
+      <a href="mailto:your-email@example.com" class="btn btn-email">Email Me</a>
+    </div>
+  </div>
+
+  <script>
+    // 預留 JavaScript 擴充空間
+    console.log("數位名片載入完成！");
+  </script>
+</body>
+</html>
