@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SYS_MEME_GENERATOR // 黑客迷因終端機</title>
+    <!-- 引入 Google Fonts: Fira Code 及 Orbitron 字體，打造高科技終端機感 -->
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+    <!-- 引入 html2canvas CDN 供截圖下載使用 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <style>
+        /* === 終端機風格變數與全局設定 === */
+        :root {
+            --bg-color: #0b0f0c;
+            --terminal-green: #00ff66;
+            --terminal-dark-green: #003311;
+            --terminal-border: #00ff6655;
+            --terminal-glow: 0 0 10px rgba(0, 255, 102, 0.3);
+            --panel-bg: #121814;
+            --accent-cyan: #00e5ff;
+            --danger-pink: #ff0055;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--terminal-green);
+            font-family: 'Fira Code', monospace;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        /* 頂部標題列 */
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+            border-bottom: 1px dashed var(--terminal-border);
+            padding-bottom: 15px;
+        }
+
+        header h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            letter-spacing: 2px;
+            color: var(--terminal-green);
+            text-shadow: var(--terminal-glow);
+        }
+
+        header p {
+            font-size: 0.85rem;
+            color: var(--accent-cyan);
+            margin-top: 5px;
+        }
+
+        /* 主容器：RWD 雙欄配置 (左控制面板 / 右預覽區) */
+        .container {
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            gap: 25px;
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            flex: 1;
+        }
+
+        @media (max-width: 850px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* 控制面板區 (終端機視窗風格) */
+        .control-panel {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--terminal-border);
+            box-shadow: var(--terminal-glow);
+            padding: 20px;
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .control-group label {
+            font-size: 0.85rem;
+            color: var(--accent-cyan);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* 輸入框與按鈕樣式 */
+        input[type="text"], input[type="file"] {
+            background-color: var(--bg-color);
+            border: 1px solid var(--terminal-border);
+            color: var(--terminal-green);
+            padding: 10px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+            border-radius: 2px;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--terminal-green);
+            box-shadow: 0 0 8px rgba(0, 255, 102, 0.4);
+        }
+
+        /* 自定義檔案上傳按鈕外觀 */
+        input[type="file"]::file-selector-button {
+            background-color: var(--terminal-dark-green);
+            color: var(--terminal-green);
+            border: 1px solid var(--terminal-green);
+            padding: 6px 12px;
+            font-family: 'Fira Code', monospace;
+            cursor: pointer;
+            border-radius: 2px;
+            transition: 0.2s;
+        }
+
+        input[type="file"]::file-selector-button:hover {
+            background-color: var(--terminal-green);
+            color: var(--bg-color);
+        }
+
+        /* 滑桿控制項樣式 */
+        .range-slider-wrap {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        input[type="range"] {
+            flex: 1;
+            accent-color: var(--terminal-green);
+            background: var(--bg-color);
+            cursor: pointer;
+        }
+
+        .range-value {
+            font-size: 0.8rem;
+            width: 40px;
+            text-align: right;
+            color: var(--accent-cyan);
+        }
+
+        /* 下載按鈕 */
+        .btn-download {
+            background-color: var(--terminal-dark-green);
+            color: var(--terminal-green);
+            border: 2px solid var(--terminal-green);
+            padding: 12px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            text-align: center;
+            letter-spacing: 1px;
+            border-radius: 4px;
+            transition: all 0.3s;
+            margin-top: 10px;
+            box-shadow: var(--terminal-glow);
+        }
+
+        .btn-download:hover {
+            background-color: var(--terminal-green);
+            color: var(--bg-color);
+            box-shadow: 0 0 20px rgba(0, 255, 102, 0.6);
+        }
+
+        /* 預覽區 (迷因顯示畫布) */
+        .preview-section {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--terminal-border);
+            padding: 20px;
+            border-radius: 4px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* 迷因主畫布容器 (html2canvas 截圖目標) */
+        #meme-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            aspect-ratio: 4 / 3;
+            background-color: #000;
+            border: 1px dashed var(--terminal-border);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        /* 底圖樣式 */
+        #meme-image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
+        /* 當無圖片時的預設提示文字 */
+        .placeholder-text {
+            position: absolute;
+            color: var(--terminal-border);
+            font-size: 0.9rem;
+            text-align: center;
+            pointer-events: none;
+            font-family: 'Fira Code', monospace;
+        }
+
+        /* 迷因文字共通樣式：粗黑邊框確保任何背景皆清晰可見 */
+        .meme-text {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            text-align: center;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            color: #ffffff;
+            text-transform: uppercase;
+            /* 關鍵：透過多層 text-shadow 做出極粗的黑色外框 */
+            text-shadow: 
+                -2px -2px 0 #000,  
+                 2px -2px 0 #000,
+                -2px  2px 0 #000,
+                 2px  2px 0 #000,
+                 0px  4px 8px rgba(0,0,0,0.8);
+            word-break: break-all;
+            pointer-events: none;
+            line-height: 1.2;
+        }
+
+        /* 上方文字預設位置 */
+        #top-text {
+            top: 10px;
+        }
+
+        /* 下方文字預設位置 */
+        #bottom-text {
+            bottom: 10px;
+        }
+
+        /* 終端機裝飾列 */
+        .terminal-bar {
+            font-size: 0.75rem;
+            color: var(--terminal-border);
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>SYS_MEME_GENERATOR</h1>
+        <p>// HACKER_TERMINAL_EDITION v1.0.0</p>
+    </header>
+
+    <div class="container">
+        <!-- 左側：控制面板 -->
+        <div class="control-panel">
+            <div class="terminal-bar">
+                <span>[INPUT_CONTROLS]</span>
+                <span>STATUS: ACTIVE</span>
+            </div>
+
+            <!-- 1. 圖片上傳 (避開 CORS 錯誤) -->
+            <div class="control-group">
+                <label for="image-input">> 載入底圖檔案 (LOCAL_FILE)</label>
+                <input type="file" id="image-input" accept="image/*">
+            </div>
+
+            <!-- 2. 雙層文字輸入 -->
+            <div class="control-group">
+                <label for="top-text-input">> 上方文字 (TOP_TEXT)</label>
+                <input type="text" id="top-text-input" placeholder="例如: WHEN CODE COMPILES">
+            </div>
+
+            <div class="control-group">
+                <label for="bottom-text-input">> 下方文字 (BOTTOM_TEXT)</label>
+                <input type="text" id="bottom-text-input" placeholder="EXACTLY ON THE FIRST TRY">
+            </div>
+
+            <!-- 3. 參數滑桿控制 -->
+            <div class="control-group">
+                <label>> 字體大小設定 (FONT_SIZE)</label>
+                <div class="range-slider-wrap">
+                    <input type="range" id="font-size-range" min="16" max="64" value="32">
+                    <span id="font-size-val" class="range-value">32px</span>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label>> 上方文字垂直位置 (TOP_POS)</label>
+                <div class="range-slider-wrap">
+                    <input type="range" id="top-pos-range" min="0" max="80" value="5">
+                    <span id="top-pos-val" class="range-value">5%</span>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label>> 下方文字垂直位置 (BOTTOM_POS)</label>
+                <div class="range-slider-wrap">
+                    <input type="range" id="bottom-pos-range" min="0" max="80" value="5">
+                    <span id="bottom-pos-val" class="range-value">5%</span>
+                </div>
+            </div>
+
+            <!-- 4. 一鍵下載圖檔按鈕 -->
+            <button class="btn-download" id="download-btn">> 執行截圖與下載 (EXPORT)</button>
+        </div>
+
+        <!-- 右側：迷因即時預覽區 -->
+        <div class="preview-section">
+            <div style="width: 100%;">
+                <div class="terminal-bar">
+                    <span>[LIVE_PREVIEW]</span>
+                    <span>RENDER_OK</span>
+                </div>
+                <!-- 包含圖片與文字的截圖目標容器 -->
+                <div id="meme-container">
+                    <div class="placeholder-text" id="placeholder">> 等待載入圖片檔案...</div>
+                    <img id="meme-image" alt="">
+                    <div id="top-text" class="meme-text"></div>
+                    <div id="bottom-text" class="meme-text"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // === JavaScript 互動邏輯與事件監聽 ===
+
+        // 取得 DOM 元素參照
+        const imageInput = document.getElementById('image-input');
+        const memeImage = document.getElementById('meme-image');
+        const placeholder = document.getElementById('placeholder');
+        
+        const topTextInput = document.getElementById('top-text-input');
+        const bottomTextInput = document.getElementById('bottom-text-input');
+        const topTextDiv = document.getElementById('top-text');
+        const bottomTextDiv = document.getElementById('bottom-text');
+
+        const fontSizeRange = document.getElementById('font-size-range');
+        const fontSizeVal = document.getElementById('font-size-val');
+        
+        const topPosRange = document.getElementById('top-pos-range');
+        const topPosVal = document.getElementById('top-pos-val');
+        
+        const bottomPosRange = document.getElementById('bottom-pos-range');
+        const bottomPosVal = document.getElementById('bottom-pos-val');
+
+        const downloadBtn = document.getElementById('download-btn');
+        const memeContainer = document.getElementById('meme-container');
+
+        // 1. 處理本機圖片上傳與預覽 (使用 FileReader 避免 CORS 問題)
+        imageInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    memeImage.src = event.target.result; // 設定圖片來源
+                    placeholder.style.display = 'none';   // 隱藏提示文字
+                }
+                reader.readAsDataURL(file); // 讀取檔案為 Base64 字串
+            }
+        });
+
+        // 2. 即時同步上方文字輸入
+        topTextInput.addEventListener('input', function(e) {
+            topTextDiv.textContent = e.target.value;
+        });
+
+        // 3. 即時同步下方文字輸入
+        bottomTextInput.addEventListener('input', function(e) {
+            bottomTextDiv.textContent = e.target.value;
+        });
+
+        // 4. 即時調整字體大小
+        fontSizeRange.addEventListener('input', function(e) {
+            const size = e.target.value + 'px';
+            topTextDiv.style.fontSize = size;
+            bottomTextDiv.style.fontSize = size;
+            fontSizeVal.textContent = size;
+        });
+
+        // 5. 即時微調上方文字的垂直位置 (使用百分比相對定位)
+        topPosRange.addEventListener('input', function(e) {
+            const pos = e.target.value + '%';
+            topTextDiv.style.top = pos;
+            topTextDiv.style.bottom = 'auto'; // 確保不受 bottom 影響
+            topPosVal.textContent = pos;
+        });
+
+        // 6. 即時微調下方文字的垂直位置 (使用百分比相對定位)
+        bottomPosRange.addEventListener('input', function(e) {
+            const pos = e.target.value + '%';
+            bottomTextDiv.style.bottom = pos;
+            bottomTextDiv.style.top = 'auto'; // 確保不受 top 影響
+            bottomPosVal.textContent = pos;
+        });
+
+        // 7. 一鍵下載圖檔功能 (使用 html2canvas 轉檔並自動觸發下載)
+        downloadBtn.addEventListener('click', function() {
+            // 檢查是否已上傳圖片
+            if (!memeImage.src || placeholder.style.display !== 'none' && memeImage.src === "") {
+                alert('[錯誤] 請先上傳一張底圖檔案！');
+                return;
+            }
+
+            // 呼叫 html2canvas 對 meme-container 進行畫布截圖
+            html2canvas(memeContainer, {
+                useCORS: true,      // 允許載入跨域或本地資源
+                allowTaint: true,   // 允許污染畫布 (針對本地 Base64 圖片)
+                scale: 2            // 提高輸出圖片解析度 (清晰度加倍)
+            }).then(canvas => {
+                // 將 canvas 轉換為圖片下載連結
+                const link = document.createElement('a');
+                link.download = 'my-meme.png'; // 指定下載檔名
+                link.href = canvas.toDataURL('image/png');
+                link.click(); // 自動點擊觸發下載
+            }).catch(err => {
+                console.error('截圖失敗: ', err);
+                alert('[錯誤] 匯出圖檔失敗，請確認圖片格式是否正常。');
+            });
+        });
+    </script>
+</body>
+</html>
