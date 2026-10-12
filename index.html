@@ -9,8 +9,8 @@
     
     <style>
         /* ==========================================
-           1. 全局樣式設定 (Global Styles)
-           ========================================== */
+            1. 全局樣式設定 (Global Styles)
+            ========================================== */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -53,8 +53,8 @@
         }
 
         /* ==========================================
-           2. 個人資訊區塊 (Profile Header)
-           ========================================== */
+            2. 個人資訊區塊 (Profile Header)
+            ========================================== */
         .profile-section {
             margin-bottom: 40px;
             display: flex;
@@ -130,8 +130,8 @@
         }
 
         /* ==========================================
-           3. 選單網格區塊 (Grid & Buttons)
-           ========================================== */
+            3. 選單網格區塊 (Grid & Buttons)
+            ========================================== */
         .grid-container {
             display: grid;
             /* 響應式網格：自動適應尺寸，電腦端每行約 2~4 個 */
@@ -217,8 +217,8 @@
         }
 
         /* ==========================================
-           4. 響應式調整 (Mobile Responsive)
-           ========================================== */
+            4. 響應式調整 (Mobile Responsive)
+            ========================================== */
         @media (max-width: 600px) {
             .container {
                 padding: 25px 15px;
@@ -247,7 +247,6 @@
         <!-- 1. 個人資訊區塊 -->
         <header class="profile-section">
             <div class="avatar-wrapper">
-                <!-- 預設假圖片 (Via Placeholder API) -->
                 <img src="https://i.postimg.cc/6qkxpDwY/vibecode-wang-mei-zhao.jpg" alt="個人大頭貼" class="avatar">
             </div>
             <h1 class="profile-name">周定寓</h1>
@@ -265,8 +264,13 @@
             <a href="w2/index.html" class="menu-btn unlocked">
                 Week 2 - 今天吃甚麼?
             </a>
-            <!-- 未解鎖按鈕 (3 至 16) -->
-            <div class="menu-btn locked"><i class="lock-icon">🔒</i> Week 3 - 尚未解鎖</div>
+
+            <!-- 已解鎖按鈕 3 -->
+            <a href="w3/index.html" class="menu-btn unlocked">
+                Week 3 - 迷因產生器
+            </a>
+
+            <!-- 未解鎖按鈕 (4 至 16) -->
             <div class="menu-btn locked"><i class="lock-icon">🔒</i> Week 4 - 尚未解鎖</div>
             <div class="menu-btn locked"><i class="lock-icon">🔒</i> Week 5 - 尚未解鎖</div>
             <div class="menu-btn locked"><i class="lock-icon">🔒</i> Week 6 - 尚未解鎖</div>
